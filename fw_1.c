@@ -11,8 +11,8 @@ int nodesCount;
 
 void Initialize(){
     #pragma omp parallel for shared(distance)
-    for (int i=MAX; i--;){
-        for (int j=MAX; j--;){
+    for (int i=0; i<MAX; ++i){
+	for (int j=0; j<MAX; ++j){
             distance[i][j]=NOT_CONNECTED;
         }
         distance[i][i]=0;
@@ -30,7 +30,9 @@ int main(int argc, char** argv){
           printf("Can't open file for reading.\n");
           return -1;
       }
-
+      
+      double timeBegin, timeEnd;
+      timeBegin = omp_get_wtime();     
       Initialize();
 
       fscanf(in_file,"%d", &nodesCount);
@@ -44,8 +46,8 @@ int main(int argc, char** argv){
           distance[a][b]=c;
       }
 
+      //#pragma omp parallel for shared(distance, nodesCount)
       //Floyd-Warshall
-
       for (int k=1;k<=nodesCount;++k){
           for (int i=1;i<=nodesCount;++i){
               if (distance[i][k]!=NOT_CONNECTED){
@@ -70,6 +72,8 @@ int main(int argc, char** argv){
           }
       }
 
+      timeEnd = omp_get_wtime();
+      printf("OMP Clock: %lf\n", (timeEnd-timeBegin));
       printf("%d\n", diameter);
 
       return 0;
