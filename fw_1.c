@@ -9,15 +9,15 @@ int distance[MAX][MAX];
 int nodesCount;
 
 
-void Initialize(){
-    #pragma omp parallel for shared(distance)
-    for (int i=0; i<MAX; ++i){
-	for (int j=0; j<MAX; ++j){
-            distance[i][j]=NOT_CONNECTED;
-        }
-        distance[i][i]=0;
-    }
-}
+// void Initialize(){
+//     #pragma omp parallel for shared(distance)
+//     for (int i=0; i<MAX; ++i){
+// 	      for (int j=0; j<MAX; ++j){
+//             distance[i][j]=NOT_CONNECTED;
+//         }
+//         distance[i][i]=0;
+//     }
+// }
 
 int main(int argc, char** argv){
       if(argc!=2){
@@ -30,10 +30,27 @@ int main(int argc, char** argv){
           printf("Can't open file for reading.\n");
           return -1;
       }
-      
+
       double timeBegin, timeEnd;
-      timeBegin = omp_get_wtime();     
-      Initialize();
+      timeBegin = omp_get_wtime();
+      #pragma omp parallel for shared(distance)
+      for (int i=0; i<MAX; ++i){
+          for (int j=0; j<MAX; ++j){
+              distance[i][j]=NOT_CONNECTED;
+          }
+          distance[i][i]=0;
+      }
+
+      int nThreds;
+      #pragma omp parallel
+      {
+        int id = omp_get_thread_num();
+        if (id == 0)
+        {
+          nThreds = omp_get_num_threads();
+        }
+        printf("thread number is: %d, Total threads is: %d.\n", id, nThreds);
+      }
 
       fscanf(in_file,"%d", &nodesCount);
 
