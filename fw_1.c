@@ -3,21 +3,22 @@
 
 #define MAX 10000
 #define NOT_CONNECTED -1
+#define MAX_THREAD 8
 
 int distance[MAX][MAX];
 
 int nodesCount;
 
-
-// void Initialize(){
-//     #pragma omp parallel for shared(distance)
-//     for (int i=0; i<MAX; ++i){
-// 	      for (int j=0; j<MAX; ++j){
-//             distance[i][j]=NOT_CONNECTED;
-//         }
-//         distance[i][i]=0;
-//     }
-// }
+    //#pragma omp parallel
+    void Initialize(){
+        #pragma omp parallel for shared(distance)
+        for (int i=0; i<MAX; ++i){
+    	      for (int j=0; j<MAX; ++j){
+                distance[i][j]=NOT_CONNECTED;
+            }
+            distance[i][i]=0;
+        }
+    }
 
 int main(int argc, char** argv){
       if(argc!=2){
@@ -33,24 +34,7 @@ int main(int argc, char** argv){
 
       double timeBegin, timeEnd;
       timeBegin = omp_get_wtime();
-      #pragma omp parallel for shared(distance)
-      for (int i=0; i<MAX; ++i){
-          for (int j=0; j<MAX; ++j){
-              distance[i][j]=NOT_CONNECTED;
-          }
-          distance[i][i]=0;
-      }
-
-      int nThreds;
-      #pragma omp parallel
-      {
-        int id = omp_get_thread_num();
-        if (id == 0)
-        {
-          nThreds = omp_get_num_threads();
-        }
-        printf("thread number is: %d, Total threads is: %d.\n", id, nThreds);
-      }
+      Initialize();
 
       fscanf(in_file,"%d", &nodesCount);
 
@@ -63,11 +47,13 @@ int main(int argc, char** argv){
           distance[a][b]=c;
       }
 
-      //#pragma omp parallel for shared(distance, nodesCount)
       //Floyd-Warshall
+      omp_set_num_threads(MAX_THREAD);
+      #pragma omp parallel shared(distance) 
       for (int k=1;k<=nodesCount;++k){
+	  printf("Number of threads: %d\n", omp_get_num_threads());
           for (int i=1;i<=nodesCount;++i){
-              if (distance[i][k]!=NOT_CONNECTED){
+ 	      if (distance[i][k]!=NOT_CONNECTED){
                   for (int j=1;j<=nodesCount;++j){
                       if (distance[k][j]!=NOT_CONNECTED && (distance[i][j]==NOT_CONNECTED || distance[i][k]+distance[k][j]<distance[i][j])){
                           distance[i][j]=distance[i][k]+distance[k][j];
