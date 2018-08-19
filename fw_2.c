@@ -36,10 +36,11 @@ void floyd_warshall() {
 
 int diameter() {
   int diameter=-1;
-
+  int i, j;
   //look for the most distant pair
-  for (int i=1;i<=nodesCount;++i){
-      for (int j=1;j<=nodesCount;++j){
+  #pragma omp parallel for private(i,j)
+  for (i=1;i<=nodesCount;++i){
+      for (j=1;j<=nodesCount;++j){
           if (diameter<dist[i][j]){
               diameter=dist[i][j];
               printf("%d-%d-%d\n", i, diameter, j);
