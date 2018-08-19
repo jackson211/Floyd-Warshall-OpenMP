@@ -46,7 +46,7 @@ int diameter() {
           }
       }
   }
-  return diameter
+  return diameter;
 }
 
 int main(int argc, char *argv[]) {
