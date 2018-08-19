@@ -72,7 +72,7 @@ int main(int argc, char *argv[]) {
     printf("diameter %d\n", diameter());
     double stopTime = omp_get_wtime();
 
-    printf("time %f\n", stop-start);
+    printf("time %f\n", stopTime-startTime);
 
     return 0;
 }
