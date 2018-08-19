@@ -20,11 +20,11 @@ void Initialize() {
 void floyd_warshall() {
     int i, j, k;
 
-    for (int k=1;k<=nodesCount;++k){
-        #pragma omp parallel for private(i,j)
-        for (int i=1;i<=nodesCount;++i){
+    for (k=1;k<=nodesCount;++k){
+        #pragma omp parallel for private(i, j)
+        for (i=1;i<=nodesCount;++i){
             if (dist[i][k]!=NOT_CONNECTED){
-                for (int j=1;j<=nodesCount;++j){
+                for (j=1;j<=nodesCount;++j){
                     if (dist[k][j]!=NOT_CONNECTED && (dist[i][j]==NOT_CONNECTED || dist[i][k]+dist[k][j]<dist[i][j])){
                         dist[i][j]=dist[i][k]+dist[k][j];
                     }
@@ -38,7 +38,7 @@ int diameter() {
   int diameter=-1;
   int i, j;
   //look for the most distant pair
-  //#pragma omp parallel for private(i,j)
+  //#pragma omp parallel for private(i, j) 
   for (i=1;i<=nodesCount;++i){
       for (j=1;j<=nodesCount;++j){
           if (diameter<dist[i][j]){
