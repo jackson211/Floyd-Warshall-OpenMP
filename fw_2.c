@@ -5,6 +5,7 @@
 #define NOT_CONNECTED -1
 
 int dist[MAX][MAX];
+int nodesCount;
 
 void Initialize() {
     #pragma omp parallel for shared(dist)
@@ -17,15 +18,20 @@ void Initialize() {
 }
 
 void floyd_warshall() {
-  int i, j, k;
+    int i, j, k;
 
-  for (k = 0; k < n; ++k)
-      #pragma omp parallel for private(i,j)
-      for (i = 0; i < n; ++i)
-          for (j = 0; j < n; ++j)
-              if ((dist[i][k] * dist[k][j] != 0) && (i != j))
-                  if ((dist[i][k] + dist[k][j] < dist[i][j]) || (dist[i][j] == 0))
-                      dist[i][j] = dist[i][k] + dist[k][j];
+    for (int k=1;k<=nodesCount;++k){
+        #pragma omp parallel for private(i,j)
+        for (int i=1;i<=nodesCount;++i){
+            if (dist[i][k]!=NOT_CONNECTED){
+                for (int j=1;j<=nodesCount;++j){
+                    if (dist[k][j]!=NOT_CONNECTED && (dist[i][j]==NOT_CONNECTED || dist[i][k]+dist[k][j]<dist[i][j])){
+                        dist[i][j]=dist[i][k]+dist[k][j];
+                    }
+                }
+            }
+        }
+    }
 }
 
 int diameter() {
