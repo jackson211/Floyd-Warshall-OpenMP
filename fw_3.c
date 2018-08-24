@@ -29,10 +29,10 @@ int main(int argc, char *argv[])
       printf("Can't open file for reading.\n");
       return -1;
   }
-
+  int i, j;
   //Initialization
-  for (int i=0; i<MAX; ++i){
-      for (int j=0; j<MAX; ++j){
+  for (i=0; i<MAX; ++i){
+      for (j=0; j<MAX; ++j){
           dist[i][j]=NOT_CONNECTED;
       }
       dist[i][i]=0;

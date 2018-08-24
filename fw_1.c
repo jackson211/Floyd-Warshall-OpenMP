@@ -11,9 +11,9 @@ int nodesCount;
 
     //#pragma omp parallel
     void Initialize(){
-        #pragma omp parallel for shared(distance)
-        for (int i=0; i<MAX; ++i){
-    	      for (int j=0; j<MAX; ++j){
+        int i, j;
+        for (i=0; i<MAX; ++i){
+    	      for (j=0; j<MAX; ++j){
                 distance[i][j]=NOT_CONNECTED;
             }
             distance[i][i]=0;
@@ -32,7 +32,6 @@ int main(int argc, char** argv){
           return -1;
       }
 
-      double timeBegin = omp_get_wtime();
       Initialize();
 
       fscanf(in_file,"%d", &nodesCount);
@@ -45,14 +44,15 @@ int main(int argc, char** argv){
           }
           distance[a][b]=c;
       }
-
+      double timeBegin = omp_get_wtime(); 
+      int i, j, k;
       //Floyd-Warshall
-      #pragma omp parallel shared(distance)
-      for (int k=1;k<=nodesCount;++k){
+      //#pragma omp parallel shared(distance)
+      for (k=1;k<=nodesCount;++k){
 	       // printf("Number of threads: %d\n", omp_get_num_threads());
-          for (int i=1;i<=nodesCount;++i){
+          for (i=1;i<=nodesCount;++i){
  	              if (distance[i][k]!=NOT_CONNECTED){
-                  for (int j=1;j<=nodesCount;++j){
+                  for (j=1;j<=nodesCount;++j){
                       if (distance[k][j]!=NOT_CONNECTED && (distance[i][j]==NOT_CONNECTED || distance[i][k]+distance[k][j]<distance[i][j])){
                           distance[i][j]=distance[i][k]+distance[k][j];
                       }
@@ -64,8 +64,8 @@ int main(int argc, char** argv){
       int diameter=-1;
 
       //look for the most distant pair
-      for (int i=1;i<=nodesCount;++i){
-          for (int j=1;j<=nodesCount;++j){
+      for (i=1;i<=nodesCount;++i){
+          for (j=1;j<=nodesCount;++j){
               if (diameter<distance[i][j]){
                   diameter=distance[i][j];
                   printf("%d-%d-%d\n", i, diameter, j);

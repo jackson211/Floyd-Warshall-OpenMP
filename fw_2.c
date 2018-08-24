@@ -8,20 +8,21 @@ int dist[MAX][MAX];
 int nodesCount;
 
 void Initialize() {
+    int i, j;
     #pragma omp parallel for shared(dist)
-    for (int i=0; i<MAX; ++i){
-        for (int j=0; j<MAX; ++j){
+    for (i=0; i<MAX; ++i){
+        for (j=0; j<MAX; ++j){
             dist[i][j]=NOT_CONNECTED;
         }
         dist[i][i]=0;
     }
 }
 
-void floyd_warshall() {
-    int i, j, k;
-
+int floyd_warshall() {
+    int i, j, k, diameter=-1;
+    #pragma omp parallel for
     for (k=1;k<=nodesCount;++k){
-        #pragma omp parallel for private(i, j)
+        #pragma omp parallel for private(i, j) schedule(dynamic)
         for (i=1;i<=nodesCount;++i){
             if (dist[i][k]!=NOT_CONNECTED){
                 for (j=1;j<=nodesCount;++j){
@@ -32,22 +33,16 @@ void floyd_warshall() {
             }
         }
     }
-}
-
-int diameter() {
-  int diameter=-1;
-  int i, j;
-  //look for the most distant pair
-  //#pragma omp parallel for private(i, j) 
-  for (i=1;i<=nodesCount;++i){
-      for (j=1;j<=nodesCount;++j){
-          if (diameter<dist[i][j]){
-              diameter=dist[i][j];
-              printf("%d-%d-%d\n", i, diameter, j);
-          }
-      }
-  }
-  return diameter;
+    #pragma omp parallel for private(i, j)
+    for (i=1;i<=nodesCount;++i){
+       for (j=1;j<=nodesCount;++j){
+           if (diameter<dist[i][j]){
+               diameter=dist[i][j];
+               printf("%d-%d-%d\n", i, diameter, j);
+           }
+       }
+    }
+    return diameter;
 }
 
 int main(int argc, char *argv[]) {
@@ -75,8 +70,7 @@ int main(int argc, char *argv[]) {
     }
 
     double startTime = omp_get_wtime();
-    floyd_warshall();
-    printf("diameter %d\n", diameter());
+    printf("diameter %d\n", floyd_warshall());
     double stopTime = omp_get_wtime();
 
     printf("time %f\n", stopTime-startTime);
