@@ -73,8 +73,7 @@ int main(int argc, char** argv){
         }
     }
     double timeEnd = omp_get_wtime();
-    printf("OMP Clock: %lf\n", (timeEnd-timeBegin));
-    printf("%d\n", diameter);
+    printf("%d, %.16g\n", diameter, (timeEnd-timeBegin));
 
     return 0;
 
